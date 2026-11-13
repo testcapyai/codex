@@ -55,6 +55,7 @@ def generate_toc_lines(content: str) -> List[str]:
         headings.append((level, text))
 
     toc = []
+    seen_slugs = set()
     for level, text in headings:
         indent = "  " * (level - 2)
         slug = text.lower()
@@ -64,6 +65,12 @@ def generate_toc_lines(content: str) -> List[str]:
         # drop other punctuation
         slug = re.sub(r"[^0-9a-z\s-]", "", slug)
         slug = slug.strip().replace(" ", "-")
+        base_slug = slug
+        suffix = 1
+        while slug in seen_slugs:
+            slug = f"{base_slug}-{suffix}"
+            suffix += 1
+        seen_slugs.add(slug)
         toc.append(f"{indent}- [{text}](#{slug})")
     return toc
 
